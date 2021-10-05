@@ -98,10 +98,8 @@ preinstall() {
     res=`which netstat 2>/dev/null`
     [[ "$?" != "0" ]] && $CMD_INSTALL net-tools
     res=`which python 2>/dev/null`
-    if [[ "$?" != "0" ]]; then
-        ln -s /usr/bin/python3 /usr/bin/python
-    fi
-
+    ln -s /usr/bin/python3 /usr/bin/python
+    
     if [[ -s /etc/selinux/config ]] && grep 'SELINUX=enforcing' /etc/selinux/config; then
         sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
         setenforce 0
