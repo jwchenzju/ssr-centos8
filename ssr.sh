@@ -28,7 +28,7 @@ colorEcho() {
 checkSystem() {
     result=$(id | awk '{print $1}')
     if [[ $result != "uid=0(root)" ]]; then
-        colorEcho $RED " 请以root身份执行该脚本"
+        colorEcho $RED " 请以root身份执行该脚本/use root to run"
         exit 1
     fi
 
@@ -36,7 +36,7 @@ checkSystem() {
     if [[ "$?" != "0" ]]; then
         res=`which apt 2>/dev/null`
         if [[ "$?" != "0" ]]; then
-            colorEcho $RED " 不受支持的Linux系统"
+            colorEcho $RED " 不受支持的Linux系统/system not supported"
             exit 1
         fi
         PMT="apt"
@@ -51,7 +51,7 @@ checkSystem() {
     fi
     res=`which systemctl 2>/dev/null`
     if [[ "$?" != "0" ]]; then
-        colorEcho $RED " 系统版本过低，请升级到最新版本"
+        colorEcho $RED " 系统版本过低，请升级到最新版本/system low, please upgrade to latest"
         exit 1
     fi
 }
@@ -80,13 +80,13 @@ statusText() {
     res=`status`
     case $res in
         2)
-            echo -e ${GREEN}已安装${PLAIN} ${RED}未运行${PLAIN}
+            echo -e ${GREEN}已安装/installed${PLAIN} ${RED}未运行/not running${PLAIN}
             ;;
         3)
-            echo -e ${GREEN}已安装${PLAIN} ${GREEN}正在运行${PLAIN}
+            echo -e ${GREEN}已安装/installed${PLAIN} ${GREEN}正在运行/running${PLAIN}
             ;;
         *)
-            echo -e ${RED}未安装${PLAIN}
+            echo -e ${RED}未安装/not installed${PLAIN}
             ;;
     esac
 }
@@ -96,7 +96,7 @@ preinstall() {
     [[ "$PMT" = "apt" ]] && $PMT update
     #echo $CMD_UPGRADE | bash
     echo ""
-    colorEcho $BLUE " 安装必要软件"
+    colorEcho $BLUE " 安装必要软件/installing depends"
     if [[ "$PMT" = "yum" ]]; then
         $CMD_INSTALL epel-release
     fi
@@ -118,9 +118,9 @@ preinstall() {
 
 installSSR() {
     if [[ ! -d /usr/local/shadowsocks ]]; then
-        colorEcho $BLUE " 下载安装文件"
+        colorEcho $BLUE " 下载安装文件/downloading"
         if ! wget --no-check-certificate -O ${FILENAME}.tar.gz ${URL}; then
-            echo -e " [${RED}Error${PLAIN}] 下载文件失败!"
+            echo -e " [${RED}Error${PLAIN}] 下载文件失败/download failed!"
             exit 1
         fi
 
@@ -165,12 +165,12 @@ install() {
 uninstall() {
     res=`status`
     if [[ $res -lt 2 ]]; then
-        echo -e " ${RED}SSR未安装，请先安装！${PLAIN}"
+        echo -e " ${RED}SSR未安装，请先安装！/SSR not installed${PLAIN}"
         return
     fi
 
     echo ""
-    read -p " 确定卸载SSR吗？(y/n)" answer
+    read -p " 确定卸载SSR吗/sure to uninstall？(y/n)" answer
     [[ -z ${answer} ]] && answer="n"
 
     if [[ "${answer}" == "y" ]] || [[ "${answer}" == "Y" ]]; then
@@ -179,30 +179,19 @@ uninstall() {
         rm -rf /usr/local/shadowsocks
         systemctl disable shadowsocks-r && systemctl stop shadowsocks-r && rm -rf $SERVICE_FILE
     fi
-    echo -e " ${RED}卸载成功${PLAIN}"
+    echo -e " ${RED}卸载成功/uninstall succesfully${PLAIN}"
 }
 menu() {
-    clear
-    echo "#############################################################"
-    echo -e "#             ${RED}ShadowsocksR/SSR 一键安装脚本${PLAIN}               #"
-    echo -e "# ${GREEN}作者${PLAIN}: 网络跳越(hijk)                                      #"
-    echo -e "# ${GREEN}网址${PLAIN}: https://hijk.art                                    #"
-    echo -e "# ${GREEN}论坛${PLAIN}: https://hijk.club                                   #"
-    echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/hijkclub                               #"
-    echo -e "# ${GREEN}Youtube频道${PLAIN}: https://youtube.com/channel/UCYTB--VsObzepVJtc9yvUxQ #"
-    echo "#############################################################"
-    echo ""
-
-    echo -e "  ${GREEN}1.${PLAIN}  安装SSR"
-    echo -e "  ${GREEN}2.  ${RED}卸载SSR${PLAIN}"
+    echo -e "  ${GREEN}1.${PLAIN}  安装SSR /install SSR"
+    echo -e "  ${GREEN}2.  ${RED}卸载SSR/uninstall SSR${PLAIN}"
     echo " -------------"
     echo -e "  ${GREEN}0.${PLAIN} 退出"
     echo 
-    echo -n " 当前状态："
+    echo -n " 当前状态/present status："
     statusText
     echo 
 
-    read -p " 请选择操作[0-2]：" answer
+    read -p " 请选择操作/please select[0-2]：" answer
     case $answer in
         0)
             exit 0
