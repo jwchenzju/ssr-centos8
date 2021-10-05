@@ -64,13 +64,7 @@ status() {
         return
     fi
     if [[ ! -f $CONFIG_FILE ]]; then
-        echo 1
-        return
-    fi
-    port=`grep server_port $CONFIG_FILE| cut -d: -f2 | tr -d \",' '`
-    res=`netstat -nltp | grep ${port} | grep python`
-    if [[ -z "$res" ]]; then
-        echo 2
+        echo 1          
     else
         echo 3
     fi
@@ -79,11 +73,9 @@ status() {
 statusText() {
     res=`status`
     case $res in
-        2)
-            echo -e ${GREEN}已安装/installed${PLAIN} ${RED}未运行/not running${PLAIN}
-            ;;
+        
         3)
-            echo -e ${GREEN}已安装/installed${PLAIN} ${GREEN}正在运行/running${PLAIN}
+            echo -e ${GREEN}已安装/installed${PLAIN}
             ;;
         *)
             echo -e ${RED}未安装/not installed${PLAIN}
