@@ -159,7 +159,6 @@ EOF
 install() {
     preinstall
     installSSR
-    start
 }
 
 
@@ -182,46 +181,6 @@ uninstall() {
     fi
     echo -e " ${RED}卸载成功${PLAIN}"
 }
-
-start() {
-    res=`status`
-    if [[ $res -lt 2 ]]; then
-        echo -e " ${RED}SS未安装，请先安装！${PLAIN}"
-        return
-    fi
-    systemctl restart ${NAME}
-    sleep 2
-    port=`grep server_port $CONFIG_FILE| cut -d: -f2 | tr -d \",' '`
-    res=`netstat -nltp | grep ${port} | grep python`
-    if [[ "$res" = "" ]]; then
-        colorEcho $RED " SSR启动失败，请检查端口是否被占用！"
-    else
-        colorEcho $BLUE " SSR启动成功！"
-    fi
-}
-
-restart() {
-    res=`status`
-    if [[ $res -lt 2 ]]; then
-        echo -e " ${RED}SSR未安装，请先安装！${PLAIN}"
-        return
-    fi
-
-    stop
-    start
-}
-
-stop() {
-    res=`status`
-    if [[ $res -lt 2 ]]; then
-        echo -e " ${RED}SSR未安装，请先安装！${PLAIN}"
-        return
-    fi
-    systemctl stop ${NAME}
-    colorEcho $BLUE " SSR停止成功"
-}
-
-
 menu() {
     clear
     echo "#############################################################"
@@ -237,17 +196,13 @@ menu() {
     echo -e "  ${GREEN}1.${PLAIN}  安装SSR"
     echo -e "  ${GREEN}2.  ${RED}卸载SSR${PLAIN}"
     echo " -------------"
-    echo -e "  ${GREEN}4.${PLAIN}  启动SSR"
-    echo -e "  ${GREEN}5.${PLAIN}  重启SSR"
-    echo -e "  ${GREEN}6.${PLAIN}  停止SSR"
-    echo " -------------"
     echo -e "  ${GREEN}0.${PLAIN} 退出"
     echo 
     echo -n " 当前状态："
     statusText
     echo 
 
-    read -p " 请选择操作[0-6]：" answer
+    read -p " 请选择操作[0-2]：" answer
     case $answer in
         0)
             exit 0
@@ -258,16 +213,7 @@ menu() {
         2)
             uninstall
             ;;
-        4)
-            start
-            ;;
-        5)
-            restart
-            ;;
-        6)
-            stop
-            ;;
-        
+            
         *)
             echo -e "$RED 请选择正确的操作！${PLAIN}"
             exit 1
@@ -280,7 +226,7 @@ checkSystem
 action=$1
 [[ -z $1 ]] && action=menu
 case "$action" in
-    menu|install|uninstall|start|restart|stop)
+    menu|install|uninstall)
         ${action}
         ;;
     *)
@@ -288,4 +234,3 @@ case "$action" in
         echo " 用法: `basename $0` [menu|install|uninstall|start|restart|stop]"
         ;;
 esac
-
