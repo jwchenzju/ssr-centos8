@@ -1,6 +1,7 @@
 #!/bin/bash
 # shadowsocksR/SSR一键安装教程
 # Author: hijk<https://hijk.art>
+# 本安装仅为文件和服务安装，配置文件需要自己设置
 
 
 RED="\033[31m"      # Error message
